@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="id" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prediksi | Regresi Linear</title>
+  <!-- Bootstrap 5.3.3 (lokal, aplikasi tetap jalan tanpa internet) -->
+  <link rel="stylesheet" href="file:///home/z/my-project/prediksi-panen-flask/static/vendor/bootstrap.min.css">
+  <link rel="stylesheet" href="file:///home/z/my-project/prediksi-panen-flask/static/css/style.css">
+</head>
+<body>
+
+  <!-- ===== Navigasi ===== -->
+  <nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">&#127807; Prediksi Panen &middot; Regresi Linear</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuUtama">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="menuUtama">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="/">Prediksi</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link " href="/analitik">Analitik Model</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== Konten ===== -->
+  <main class="py-4">
+    <div class="container">
+      
+
+<!-- ===== Hero ===== -->
+<div class="text-center mb-4">
+  <h1 class="hero-judul">Prediksi <span class="aksen">Hasil Panen Padi</span><br>Berdasarkan Curah Hujan</h1>
+  <p class="muted mt-2 mx-auto" style="max-width: 680px;">
+    Model <em>Regresi Linear Sederhana</em> yang dilatih dari data FAO &amp; World Bank
+    (8 negara Asia Monsun, 1990&ndash;2013). Masukkan curah hujan tahunan rata-rata
+    wilayah Anda, dan model akan mengestimasi produktivitas padi.
+  </p>
+</div>
+
+<div class="row g-4 align-items-stretch">
+  <!-- ===== Form Input ===== -->
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-body p-4">
+        <h5 class="card-title mb-3">&#127782;&#65039; Masukkan Data Curah Hujan</h5>
+
+        
+
+        <form method="POST" action="/prediksi" id="formPrediksi">
+          <label for="curahHujan" class="form-label muted">
+            Curah Hujan Tahunan Rata-rata (mm/tahun)
+          </label>
+          <input type="number" class="form-control form-control-lg mb-2"
+                 id="curahHujan" name="curah_hujan"
+                 placeholder="contoh: 2702" min="0" max="5000" step="1" required>
+          <div class="muted small mb-3">
+            Rentang data pelatihan model: <strong class="text-accent2">494</strong> &ndash;
+            <strong class="text-accent2">2.875</strong> mm/tahun.
+            Input di luar rentang ini tetap diproses, tetapi akurasi menurun
+            (ekstrapolasi).
+          </div>
+
+          <button type="submit" class="btn btn-lime btn-lg w-100 mt-2">
+            &#128295; Prediksi Hasil Panen
+          </button>
+        </form>
+
+        <hr class="border-secondary my-4">
+        <p class="small muted mb-2">Klik cepat &mdash; curah hujan riil per negara dalam dataset:</p>
+        <div class="d-flex flex-wrap gap-2">
+          
+          <button type="button" class="chip-negara"
+                  onclick="isiInput(494)">
+            Pakistan (min) &middot; 494 mm
+          </button>
+          
+          <button type="button" class="chip-negara"
+                  onclick="isiInput(1083)">
+            India &middot; 1083 mm
+          </button>
+          
+          <button type="button" class="chip-negara"
+                  onclick="isiInput(1712)">
+            Sri Lanka &middot; 1712 mm
+          </button>
+          
+          <button type="button" class="chip-negara"
+                  onclick="isiInput(2702)">
+            Indonesia &middot; 2702 mm
+          </button>
+          
+          <button type="button" class="chip-negara"
+                  onclick="isiInput(2875)">
+            Malaysia (maks) &middot; 2875 mm
+          </button>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Ringkasan Model ===== -->
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-body p-4">
+        <h5 class="card-title mb-3">&#128202; Model Anda Sekilas</h5>
+        <div class="persamaan mb-3">y  =  25.562,87  +  3,73 x X</div>
+        <div class="row row-cols-3 g-3 mb-3">
+          <div class="col">
+            <div class="card kartu-metrik">
+              <div class="angka">0,313</div>
+              <div class="label">R&sup2; Data Uji</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card kartu-metrik">
+              <div class="angka">0,66</div>
+              <div class="satuan">ton/ha</div>
+              <div class="label">RMSE</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card kartu-metrik">
+              <div class="angka">+0,480</div>
+              <div class="label">Korelasi r</div>
+            </div>
+          </div>
+        </div>
+        <p class="muted mb-2">
+          Setiap kenaikan curah hujan <strong class="text-accent2">+100 mm/tahun</strong>
+          diasosiasikan dengan kenaikan produktivitas padi
+          <strong class="text-accent">+373 hg/ha
+          (&plusmn;0,04 ton/ha)</strong>.
+        </p>
+        <p class="muted mb-0">
+          Ingin tahu bagaimana model ini dibangun, dibersihkan, dan dievaluasi?
+          <a href="/analitik" class="text-accent2">Lihat halaman Analitik Model &rarr;</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+    </div>
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="py-3 mt-auto">
+    <div class="container d-flex flex-wrap justify-content-between">
+      <span>Proyek Akhir Modul 1 &mdash; Implementasi Regresi Linear Sederhana dengan Flask</span>
+      <span>Studi kasus: Padi Asia Monsun (FAO &amp; World Bank, 1990&ndash;2013)</span>
+    </div>
+  </footer>
+
+  <script src="file:///home/z/my-project/prediksi-panen-flask/static/vendor/bootstrap.bundle.min.js"></script>
+  
+<script>
+  // Isi cepat input dari chip negara, lalu fokuskan tombol submit
+  function isiInput(nilai) {
+    const input = document.getElementById('curahHujan');
+    input.value = nilai;
+    input.focus();
+  }
+</script>
+
+</body>
+</html>

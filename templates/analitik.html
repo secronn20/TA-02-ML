@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% block judul %}Analitik Model{% endblock %}
+{% block konten %}
+
+<h1 class="hero-judul mb-1">Analitik <span class="aksen">Model</span></h1>
+<p class="muted mb-4">
+  Transparansi penuh: bagaimana data dibersihkan, model dilatih, dievaluasi,
+  dan apa makna parameternya dalam konteks studi kasus.
+</p>
+
+<!-- ===== Kartu Metrik ===== -->
+<div class="row row-cols-2 row-cols-md-4 g-3 mb-4">
+  <div class="col"><div class="card kartu-metrik">
+    <div class="angka">{{ r2_uji_fmt }}</div>
+    <div class="label">R&sup2; Data Uji</div>
+    <div class="satuan">latih: {{ r2_latih_fmt }}</div>
+  </div></div>
+  <div class="col"><div class="card kartu-metrik">
+    <div class="angka">{{ rmse_uji_ton }}</div>
+    <div class="satuan">ton/ha</div>
+    <div class="label">RMSE Uji ({{ rmse_uji_hg_fmt }} hg/ha)</div>
+  </div></div>
+  <div class="col"><div class="card kartu-metrik">
+    <div class="angka">+{{ meta.metrik.r_korelasi }}</div>
+    <div class="label">Korelasi Pearson</div>
+    <div class="satuan">p = {{ p_value|safe }} (sangat signifikan)</div>
+  </div></div>
+  <div class="col"><div class="card kartu-metrik">
+    <div class="angka">{{ meta.preprocessing.baris_final }}</div>
+    <div class="label">Baris Data Final</div>
+    <div class="satuan">{{ meta.split.n_latih }} latih / {{ meta.split.n_uji }} uji</div>
+  </div></div>
+</div>
+
+<!-- ===== Alur Preprocessing ===== -->
+<div class="card mb-4">
+  <div class="card-body p-4">
+    <h5 class="card-title mb-3">&#129514; Alur Pra-pemrosesan Data</h5>
+    <div class="tahapan">
+      <div class="tahap">
+        <div class="judul-tahap">1. Data mentah &mdash; {{ meta.preprocessing.baris_mentah }} baris</div>
+        <span class="muted">yield_df.csv: 101 negara &times; 10 komoditas &times; 1990&ndash;2013 (FAO + World Bank).</span>
+      </div>
+      <div class="tahap">
+        <div class="judul-tahap">2. Deduplikasi &mdash; {{ meta.preprocessing.duplikat_dibuang }} baris duplikat dibuang</div>
+        <span class="muted">Setiap kombinasi (negara, komoditas, tahun) harus unik; duplikat berasal dari penggabungan dua sumber data suhu. Tersisa {{ meta.preprocessing.baris_setelah_dedup }} baris.</span>
+      </div>
+      <div class="tahap">
+        <div class="judul-tahap">3. Subset studi kasus &mdash; {{ meta.preprocessing.baris_final }} baris</div>
+        <span class="muted">Padi (<em>Rice, paddy</em>) pada 8 negara Asia Monsun. Justifikasi: di kawasan ini hujan adalah sumber air utama padi, sehingga hubungan curah hujan &rarr; produktivitas paling relevan; korelasi naik dari r = &minus;0,13 (global, terkonfound irigasi/teknologi) menjadi r = +0,48.</span>
+      </div>
+      <div class="tahap">
+        <div class="judul-tahap">4. Missing values &amp; outlier</div>
+        <span class="muted">Missing values: {{ meta.preprocessing.missing_values }}. Deteksi outlier IQR menandai {{ meta.preprocessing.outlier_iqr }} titik (produktivitas tinggi Indonesia tahun-tahun tertentu); setelah ditelusuri nilainya valid secara riil, maka dipertahankan.</span>
+      </div>
+      <div class="tahap mb-0">
+        <div class="judul-tahap">5. Train/test split &mdash; {{ meta.split.n_latih }} : {{ meta.split.n_uji }} (80:20)</div>
+        <span class="muted">random_state = {{ meta.split.random_state }} agar hasil dapat direproduksi.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Grafik EDA ===== -->
+<div class="card mb-4">
+  <div class="card-body p-4">
+    <h5 class="card-title mb-3">&#128200; Grafik Eksplorasi Data (EDA)</h5>
+    <div class="row g-4">
+      <div class="col-12">
+        <img src="{{ url_for('static', filename='charts/scatter_linearitas.png') }}" class="gambar-grafik" alt="Scatterplot validasi linearitas">
+        <p class="muted small mt-2 mb-0">Validasi asumsi linearitas: sebaran titik mengikuti garis tren naik &mdash; hubungan positif linear moderat.</p>
+      </div>
+      <div class="col-md-6">
+        <img src="{{ url_for('static', filename='charts/distribusi.png') }}" class="gambar-grafik" alt="Histogram distribusi">
+        <p class="muted small mt-2 mb-0">Distribusi kedua variabel &mdash; tidak ada anomali mencolok.</p>
+      </div>
+      <div class="col-md-6">
+        <img src="{{ url_for('static', filename='charts/boxplot_outlier.png') }}" class="gambar-grafik" alt="Boxplot outlier">
+        <p class="muted small mt-2 mb-0">Boxplot untuk deteksi outlier metode IQR.</p>
+      </div>
+      <div class="col-md-6">
+        <img src="{{ url_for('static', filename='charts/heatmap_korelasi.png') }}" class="gambar-grafik" alt="Heatmap korelasi">
+        <p class="muted small mt-2 mb-0">Korelasi antar variabel numerik pada subset padi.</p>
+      </div>
+      <div class="col-md-6">
+        <img src="{{ url_for('static', filename='charts/tren_tahunan.png') }}" class="gambar-grafik" alt="Tren tahunan">
+        <p class="muted small mt-2 mb-0">Tren produktivitas per negara 1990&ndash;2013.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Interpretasi Parameter ===== -->
+<div class="card mb-4">
+  <div class="card-body p-4">
+    <h5 class="card-title mb-3">&#129518; Persamaan &amp; Interpretasi Model</h5>
+    <div class="persamaan mb-4">{{ persamaan }}</div>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="card h-100">
+          <div class="card-body">
+            <h6 class="text-accent">Intersep (b&#8320;) = {{ intersep }} hg/ha</h6>
+            <p class="muted mb-0">
+              Estimasi hasil panen ketika curah hujan = 0 mm. Dalam konteks pertanian,
+              nilai ini dapat dibaca sebagai <em>baseline</em> produktivitas yang didukung
+              sumber air selain hujan (irigasi, air tanah). Karena 0 mm berada jauh di luar
+              rentang data ({{ rentang_min }}&ndash;{{ rentang_maks }} mm), intersep
+              <strong>tidak boleh diekstrapolasi</strong> sebagai prediksi nyata.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card h-100">
+          <div class="card-body">
+            <h6 class="text-accent">Koefisien (b&#8321;) = {{ koefisien }} hg/ha per mm</h6>
+            <p class="muted mb-0">
+              Setiap kenaikan curah hujan <strong>+100 mm/tahun</strong> diasosiasikan dengan
+              kenaikan produktivitas padi <strong>+{{ koef_100mm }} hg/ha
+              (&plusmn;{{ koef_100mm_ton }} ton/ha)</strong>. Arah positif ini konsisten dengan
+              logika agronomis: air adalah input terpenting padi sawah di kawasan monsun.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="alert alert-secondary mt-3 mb-0">
+      <strong>Batasan model:</strong> R&sup2; uji {{ r2_uji_fmt }} berarti kurang lebih
+      {{ persen_variasi }}% variasi produktivitas dapat dijelaskan oleh curah hujan saja;
+      sisanya dipengaruhi irigasi, pemupukan, varietas, hama, dan praktik budidaya.
+      Model Regresi Linear Sederhana ini valid untuk estimasi awal, bukan rekomendasi kebijakan final.
+    </div>
+  </div>
+</div>
+
+<!-- ===== Tabel Statistik per Negara ===== -->
+<div class="card mb-4">
+  <div class="card-body p-4">
+    <h5 class="card-title mb-3">&#127757; Statistik per Negara (urut curah hujan)</h5>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr>
+            <th>Negara</th>
+            <th class="text-end">Curah Hujan (mm)</th>
+            <th class="text-end">Hasil Rata-rata (hg/ha)</th>
+            <th class="text-end">Hasil Rata-rata (ton/ha)</th>
+            <th class="text-end">Min&ndash;Maks (hg/ha)</th>
+            <th class="text-end">n</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for n in per_negara %}
+          <tr>
+            <td>{{ n.negara }}{% if n.negara == 'Indonesia' %} <span class="badge badge-lime ms-1">tertinggi</span>{% endif %}</td>
+            <td class="text-end">{{ n.curah_hujan_mm }}</td>
+            <td class="text-end">{{ n.hasil_rata_hg_ha }}</td>
+            <td class="text-end">{{ n.hasil_rata_ton }}</td>
+            <td class="text-end muted">{{ n.hasil_min }} &ndash; {{ n.hasil_max }}</td>
+            <td class="text-end muted">{{ n.jumlah_data }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="d-flex gap-2 justify-content-center mb-2">
+  <a href="{{ url_for('index') }}" class="btn btn-lime">Coba Prediksi &rarr;</a>
+</div>
+{% endblock %}

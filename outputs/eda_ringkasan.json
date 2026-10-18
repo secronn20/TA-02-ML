@@ -1,0 +1,94 @@
+{
+  "baris_mentah": 43354,
+  "baris_setelah_dedup": 13130,
+  "baris_subset": 184,
+  "jumlah_negara": 8,
+  "tahun_min": 1990,
+  "tahun_max": 2013,
+  "missing_values_xy": 0,
+  "pearson_r": 0.4798,
+  "pearson_p": 5.51345887546436e-12,
+  "spearman_r": 0.4806,
+  "hujan_min": 494.0,
+  "hujan_max": 2875.0,
+  "hujan_rata": 1831.8,
+  "hasil_min": 19556.0,
+  "hasil_max": 51520.0,
+  "hasil_rata": 32605.5,
+  "per_negara": [
+    {
+      "negara": "Pakistan",
+      "curah_hujan_mm": 494.0,
+      "hasil_rata_hg_ha": 30052.0,
+      "hasil_min": 23151,
+      "hasil_max": 37528,
+      "jumlah_data": 23
+    },
+    {
+      "negara": "India",
+      "curah_hujan_mm": 1083.0,
+      "hasil_rata_hg_ha": 30296.0,
+      "hasil_min": 26092,
+      "hasil_max": 36909,
+      "jumlah_data": 23
+    },
+    {
+      "negara": "Nepal",
+      "curah_hujan_mm": 1500.0,
+      "hasil_rata_hg_ha": 26239.0,
+      "hasil_min": 20481,
+      "hasil_max": 33120,
+      "jumlah_data": 23
+    },
+    {
+      "negara": "Thailand",
+      "curah_hujan_mm": 1622.0,
+      "hasil_rata_hg_ha": 26761.0,
+      "hasil_min": 19556,
+      "hasil_max": 31867,
+      "jumlah_data": 23
+    },
+    {
+      "negara": "Sri Lanka",
+      "curah_hujan_mm": 1712.0,
+      "hasil_rata_hg_ha": 34528.0,
+      "hasil_min": 29933,
+      "hasil_max": 40558,
+      "jumlah_data": 23
+    },
+    {
+      "negara": "Bangladesh",
+      "curah_hujan_mm": 2666.0,
+      "hasil_rata_hg_ha": 34424.0,
+      "hasil_min": 25328,
+      "hasil_max": 45317,
+      "jumlah_data": 23
+    },
+    {
+      "negara": "Indonesia",
+      "curah_hujan_mm": 2702.0,
+      "hasil_rata_hg_ha": 45752.0,
+      "hasil_min": 41974,
+      "hasil_max": 51520,
+      "jumlah_data": 23
+    },
+    {
+      "negara": "Malaysia",
+      "curah_hujan_mm": 2875.0,
+      "hasil_rata_hg_ha": 32791.0,
+      "hasil_min": 27694,
+      "hasil_max": 38763,
+      "jumlah_data": 23
+    }
+  ],
+  "daftar_negara": [
+    "Bangladesh",
+    "India",
+    "Indonesia",
+    "Malaysia",
+    "Nepal",
+    "Pakistan",
+    "Sri Lanka",
+    "Thailand"
+  ]
+}

@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block judul %}Prediksi{% endblock %}
+{% block konten %}
+
+<!-- ===== Hero ===== -->
+<div class="text-center mb-4">
+  <h1 class="hero-judul">Prediksi <span class="aksen">Hasil Panen Padi</span><br>Berdasarkan Curah Hujan</h1>
+  <p class="muted mt-2 mx-auto" style="max-width: 680px;">
+    Model <em>Regresi Linear Sederhana</em> yang dilatih dari data FAO &amp; World Bank
+    (8 negara Asia Monsun, 1990&ndash;2013). Masukkan curah hujan tahunan rata-rata
+    wilayah Anda, dan model akan mengestimasi produktivitas padi.
+  </p>
+</div>
+
+<div class="row g-4 align-items-stretch">
+  <!-- ===== Form Input ===== -->
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-body p-4">
+        <h5 class="card-title mb-3">&#127782;&#65039; Masukkan Data Curah Hujan</h5>
+
+        {% if pesan_error %}
+        <div class="alert alert-danger py-2" role="alert">
+          &#10060; {{ pesan_error }}
+        </div>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('prediksi') }}" id="formPrediksi">
+          <label for="curahHujan" class="form-label muted">
+            Curah Hujan Tahunan Rata-rata (mm/tahun)
+          </label>
+          <input type="number" class="form-control form-control-lg mb-2"
+                 id="curahHujan" name="curah_hujan"
+                 placeholder="contoh: 2702" min="0" max="5000" step="1" required>
+          <div class="muted small mb-3">
+            Rentang data pelatihan model: <strong class="text-accent2">{{ rentang_min }}</strong> &ndash;
+            <strong class="text-accent2">{{ rentang_maks }}</strong> mm/tahun.
+            Input di luar rentang ini tetap diproses, tetapi akurasi menurun
+            (ekstrapolasi).
+          </div>
+
+          <button type="submit" class="btn btn-lime btn-lg w-100 mt-2">
+            &#128295; Prediksi Hasil Panen
+          </button>
+        </form>
+
+        <hr class="border-secondary my-4">
+        <p class="small muted mb-2">Klik cepat &mdash; curah hujan riil per negara dalam dataset:</p>
+        <div class="d-flex flex-wrap gap-2">
+          {% for c in contoh_negara %}
+          <button type="button" class="chip-negara"
+                  onclick="isiInput({{ c.hujan_mm }})">
+            {{ c.label }} &middot; {{ c.hujan_mm }} mm
+          </button>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Ringkasan Model ===== -->
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-body p-4">
+        <h5 class="card-title mb-3">&#128202; Model Anda Sekilas</h5>
+        <div class="persamaan mb-3">{{ persamaan }}</div>
+        <div class="row row-cols-3 g-3 mb-3">
+          <div class="col">
+            <div class="card kartu-metrik">
+              <div class="angka">{{ r2_uji }}</div>
+              <div class="label">R&sup2; Data Uji</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card kartu-metrik">
+              <div class="angka">{{ rmse_ton }}</div>
+              <div class="satuan">ton/ha</div>
+              <div class="label">RMSE</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card kartu-metrik">
+              <div class="angka">+{{ korelasi_r }}</div>
+              <div class="label">Korelasi r</div>
+            </div>
+          </div>
+        </div>
+        <p class="muted mb-2">
+          Setiap kenaikan curah hujan <strong class="text-accent2">+100 mm/tahun</strong>
+          diasosiasikan dengan kenaikan produktivitas padi
+          <strong class="text-accent">+{{ koef_100mm }} hg/ha
+          (&plusmn;{{ koef_100mm_ton }} ton/ha)</strong>.
+        </p>
+        <p class="muted mb-0">
+          Ingin tahu bagaimana model ini dibangun, dibersihkan, dan dievaluasi?
+          <a href="{{ url_for('analitik') }}" class="text-accent2">Lihat halaman Analitik Model &rarr;</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block skrip %}
+<script>
+  // Isi cepat input dari chip negara, lalu fokuskan tombol submit
+  function isiInput(nilai) {
+    const input = document.getElementById('curahHujan');
+    input.value = nilai;
+    input.focus();
+  }
+</script>
+{% endblock %}

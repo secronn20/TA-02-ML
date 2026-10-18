@@ -1,0 +1,86 @@
+{
+  "studi_kasus": "Prediksi Produktivitas Padi berdasarkan Curah Hujan",
+  "dataset": "yield_df.csv (FAO + World Bank via Kaggle)",
+  "komoditas": "Rice, paddy",
+  "daftar_negara": [
+    "Bangladesh",
+    "India",
+    "Indonesia",
+    "Malaysia",
+    "Nepal",
+    "Pakistan",
+    "Sri Lanka",
+    "Thailand"
+  ],
+  "tahun_min": 1990,
+  "tahun_max": 2013,
+  "preprocessing": {
+    "baris_mentah": 28242,
+    "duplikat_dibuang": 15112,
+    "baris_setelah_dedup": 13130,
+    "missing_values": 0,
+    "outlier_iqr": 6,
+    "keputusan_outlier": "Dipertahankan - terverifikasi data valid FAO",
+    "baris_final": 184
+  },
+  "variabel_x": "curah_hujan_mm (curah hujan tahunan rata-rata, mm)",
+  "variabel_y": "hasil_panen_hg_ha (produktivitas padi, hg/ha)",
+  "split": {
+    "test_size": 0.2,
+    "random_state": 42,
+    "n_latih": 147,
+    "n_uji": 37
+  },
+  "metrik": {
+    "r_korelasi": 0.4798,
+    "p_value": 5.51345887546436e-12,
+    "r2_latih": 0.1927,
+    "r2_uji": 0.3128,
+    "rmse_latih_hg_ha": 6043.7,
+    "rmse_uji_hg_ha": 6637.6,
+    "rmse_uji_ton_ha": 0.66,
+    "mae_uji_hg_ha": 5618.2
+  },
+  "parameter_model": {
+    "intersep_hg_ha": 25562.87,
+    "koefisien_hg_ha_per_mm": 3.73,
+    "koefisien_hg_ha_per_100mm": 373.1,
+    "koefisien_ton_ha_per_100mm": 0.037
+  },
+  "rentang_input_valid": {
+    "hujan_min": 494.0,
+    "hujan_maks": 2875.0
+  },
+  "contoh_prediksi": [
+    {
+      "label": "Pakistan (min)",
+      "hujan_mm": 494,
+      "prediksi_hg_ha": 27406,
+      "prediksi_ton_ha": 2.74
+    },
+    {
+      "label": "India",
+      "hujan_mm": 1083,
+      "prediksi_hg_ha": 29603,
+      "prediksi_ton_ha": 2.96
+    },
+    {
+      "label": "Sri Lanka",
+      "hujan_mm": 1712,
+      "prediksi_hg_ha": 31950,
+      "prediksi_ton_ha": 3.19
+    },
+    {
+      "label": "Indonesia",
+      "hujan_mm": 2702,
+      "prediksi_hg_ha": 35643,
+      "prediksi_ton_ha": 3.56
+    },
+    {
+      "label": "Malaysia (maks)",
+      "hujan_mm": 2875,
+      "prediksi_hg_ha": 36288,
+      "prediksi_ton_ha": 3.63
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block judul %}Hasil Prediksi{% endblock %}
+{% block konten %}
+
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-body p-4 p-md-5 text-center">
+
+        <p class="muted mb-1">Estimasi Produktivitas Padi</p>
+        <h1 class="hero-judul mb-1">
+          Untuk Curah Hujan <span class="aksen">{{ hujan_input }} mm/tahun</span>
+        </h1>
+
+        {% if di_luar_rentang %}
+        <div class="alert alert-warning mt-3 mb-3" role="alert">
+          &#9888;&#65039; Nilai input <strong>di luar rentang data pelatihan</strong>
+          ({{ rentang_min }}&ndash;{{ rentang_maks }} mm). Hasil di bawah adalah
+          <em>ekstrapolasi</em> &mdash; gunakan sebagai gambaran kasar saja.
+        </div>
+        {% endif %}
+
+        <div class="angka-besar mt-3">{{ prediksi_hg_ha }} <small>hg/ha</small></div>
+        <p class="fs-4 mt-2 mb-4">
+          setara <strong class="text-accent">{{ prediksi_ton_ha }} ton per hektare</strong>
+        </p>
+
+        <div class="persamaan text-start mb-4">
+          Penjelasan hitungan:<br>
+          y = {{ intersep }} + {{ koefisien }} &times; {{ hujan_input }}<br>
+          y = {{ prediksi_hg_ha }} hg/ha &nbsp;&nbsp;(1 ton/ha = 10.000 hg/ha)
+        </div>
+
+        <p class="muted mb-4">
+          Artinya, wilayah dengan curah hujan tahunan rata-rata
+          <strong class="text-accent2">{{ hujan_input }} mm</strong>
+          diperkirakan menghasilkan padi sekitar
+          <strong>{{ prediksi_ton_ha }} ton/ha</strong> &mdash; setara
+          {{ kecil_ke_besar }} daripada rata-rata 8 negara Asia Monsun
+          dalam dataset ({{ rata_dataset_ton }} ton/ha).
+        </p>
+
+        <div class="d-flex flex-wrap gap-2 justify-content-center">
+          <a href="{{ url_for('index') }}" class="btn btn-lime">&larr; Prediksi Lagi</a>
+          <a href="{{ url_for('analitik') }}" class="btn btn-outline-secondary">Lihat Analitik Model</a>
+        </div>
+      </div>
+    </div>
+
+    <p class="text-center muted small mt-3 mb-0">
+      &#9432; Estimasi bersifat statistik berdasarkan hubungan historis curah hujan
+      vs produktivitas; tidak menggantikan analisis agronomis lapangan.
+    </p>
+  </div>
+</div>
+{% endblock %}

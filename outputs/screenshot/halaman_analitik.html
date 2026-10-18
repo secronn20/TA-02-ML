@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="id" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analitik Model | Regresi Linear</title>
+  <!-- Bootstrap 5.3.3 (lokal, aplikasi tetap jalan tanpa internet) -->
+  <link rel="stylesheet" href="file:///home/z/my-project/prediksi-panen-flask/static/vendor/bootstrap.min.css">
+  <link rel="stylesheet" href="file:///home/z/my-project/prediksi-panen-flask/static/css/style.css">
+</head>
+<body>
+
+  <!-- ===== Navigasi ===== -->
+  <nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">&#127807; Prediksi Panen &middot; Regresi Linear</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuUtama">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="menuUtama">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link " href="/">Prediksi</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="/analitik">Analitik Model</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== Konten ===== -->
+  <main class="py-4">
+    <div class="container">
+      
+
+<h1 class="hero-judul mb-1">Analitik <span class="aksen">Model</span></h1>
+<p class="muted mb-4">
+  Transparansi penuh: bagaimana data dibersihkan, model dilatih, dievaluasi,
+  dan apa makna parameternya dalam konteks studi kasus.
+</p>
+
+<!-- ===== Kartu Metrik ===== -->
+<div class="row row-cols-2 row-cols-md-4 g-3 mb-4">
+  <div class="col"><div class="card kartu-metrik">
+    <div class="angka">0,313</div>
+    <div class="label">R&sup2; Data Uji</div>
+    <div class="satuan">latih: 0,193</div>
+  </div></div>
+  <div class="col"><div class="card kartu-metrik">
+    <div class="angka">0,66</div>
+    <div class="satuan">ton/ha</div>
+    <div class="label">RMSE Uji (6.638 hg/ha)</div>
+  </div></div>
+  <div class="col"><div class="card kartu-metrik">
+    <div class="angka">+0.4798</div>
+    <div class="label">Korelasi Pearson</div>
+    <div class="satuan">p = 5,5 &times; 10<sup>-12</sup> (sangat signifikan)</div>
+  </div></div>
+  <div class="col"><div class="card kartu-metrik">
+    <div class="angka">184</div>
+    <div class="label">Baris Data Final</div>
+    <div class="satuan">147 latih / 37 uji</div>
+  </div></div>
+</div>
+
+<!-- ===== Alur Preprocessing ===== -->
+<div class="card mb-4">
+  <div class="card-body p-4">
+    <h5 class="card-title mb-3">&#129514; Alur Pra-pemrosesan Data</h5>
+    <div class="tahapan">
+      <div class="tahap">
+        <div class="judul-tahap">1. Data mentah &mdash; 28242 baris</div>
+        <span class="muted">yield_df.csv: 101 negara &times; 10 komoditas &times; 1990&ndash;2013 (FAO + World Bank).</span>
+      </div>
+      <div class="tahap">
+        <div class="judul-tahap">2. Deduplikasi &mdash; 15112 baris duplikat dibuang</div>
+        <span class="muted">Setiap kombinasi (negara, komoditas, tahun) harus unik; duplikat berasal dari penggabungan dua sumber data suhu. Tersisa 13130 baris.</span>
+      </div>
+      <div class="tahap">
+        <div class="judul-tahap">3. Subset studi kasus &mdash; 184 baris</div>
+        <span class="muted">Padi (<em>Rice, paddy</em>) pada 8 negara Asia Monsun. Justifikasi: di kawasan ini hujan adalah sumber air utama padi, sehingga hubungan curah hujan &rarr; produktivitas paling relevan; korelasi naik dari r = &minus;0,13 (global, terkonfound irigasi/teknologi) menjadi r = +0,48.</span>
+      </div>
+      <div class="tahap">
+        <div class="judul-tahap">4. Missing values &amp; outlier</div>
+        <span class="muted">Missing values: 0. Deteksi outlier IQR menandai 6 titik (produktivitas tinggi Indonesia tahun-tahun tertentu); setelah ditelusuri nilainya valid secara riil, maka dipertahankan.</span>
+      </div>
+      <div class="tahap mb-0">
+        <div class="judul-tahap">5. Train/test split &mdash; 147 : 37 (80:20)</div>
+        <span class="muted">random_state = 42 agar hasil dapat direproduksi.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Grafik EDA ===== -->
+<div class="card mb-4">
+  <div class="card-body p-4">
+    <h5 class="card-title mb-3">&#128200; Grafik Eksplorasi Data (EDA)</h5>
+    <div class="row g-4">
+      <div class="col-12">
+        <img src="file:///home/z/my-project/prediksi-panen-flask/static/charts/scatter_linearitas.png" class="gambar-grafik" alt="Scatterplot validasi linearitas">
+        <p class="muted small mt-2 mb-0">Validasi asumsi linearitas: sebaran titik mengikuti garis tren naik &mdash; hubungan positif linear moderat.</p>
+      </div>
+      <div class="col-md-6">
+        <img src="file:///home/z/my-project/prediksi-panen-flask/static/charts/distribusi.png" class="gambar-grafik" alt="Histogram distribusi">
+        <p class="muted small mt-2 mb-0">Distribusi kedua variabel &mdash; tidak ada anomali mencolok.</p>
+      </div>
+      <div class="col-md-6">
+        <img src="file:///home/z/my-project/prediksi-panen-flask/static/charts/boxplot_outlier.png" class="gambar-grafik" alt="Boxplot outlier">
+        <p class="muted small mt-2 mb-0">Boxplot untuk deteksi outlier metode IQR.</p>
+      </div>
+      <div class="col-md-6">
+        <img src="file:///home/z/my-project/prediksi-panen-flask/static/charts/heatmap_korelasi.png" class="gambar-grafik" alt="Heatmap korelasi">
+        <p class="muted small mt-2 mb-0">Korelasi antar variabel numerik pada subset padi.</p>
+      </div>
+      <div class="col-md-6">
+        <img src="file:///home/z/my-project/prediksi-panen-flask/static/charts/tren_tahunan.png" class="gambar-grafik" alt="Tren tahunan">
+        <p class="muted small mt-2 mb-0">Tren produktivitas per negara 1990&ndash;2013.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Interpretasi Parameter ===== -->
+<div class="card mb-4">
+  <div class="card-body p-4">
+    <h5 class="card-title mb-3">&#129518; Persamaan &amp; Interpretasi Model</h5>
+    <div class="persamaan mb-4">y  =  25.562,87  +  3,73 x X</div>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="card h-100">
+          <div class="card-body">
+            <h6 class="text-accent">Intersep (b&#8320;) = 25.562,87 hg/ha</h6>
+            <p class="muted mb-0">
+              Estimasi hasil panen ketika curah hujan = 0 mm. Dalam konteks pertanian,
+              nilai ini dapat dibaca sebagai <em>baseline</em> produktivitas yang didukung
+              sumber air selain hujan (irigasi, air tanah). Karena 0 mm berada jauh di luar
+              rentang data (494&ndash;2.875 mm), intersep
+              <strong>tidak boleh diekstrapolasi</strong> sebagai prediksi nyata.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card h-100">
+          <div class="card-body">
+            <h6 class="text-accent">Koefisien (b&#8321;) = 3,73 hg/ha per mm</h6>
+            <p class="muted mb-0">
+              Setiap kenaikan curah hujan <strong>+100 mm/tahun</strong> diasosiasikan dengan
+              kenaikan produktivitas padi <strong>+373 hg/ha
+              (&plusmn;0,04 ton/ha)</strong>. Arah positif ini konsisten dengan
+              logika agronomis: air adalah input terpenting padi sawah di kawasan monsun.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="alert alert-secondary mt-3 mb-0">
+      <strong>Batasan model:</strong> R&sup2; uji 0,313 berarti kurang lebih
+      31% variasi produktivitas dapat dijelaskan oleh curah hujan saja;
+      sisanya dipengaruhi irigasi, pemupukan, varietas, hama, dan praktik budidaya.
+      Model Regresi Linear Sederhana ini valid untuk estimasi awal, bukan rekomendasi kebijakan final.
+    </div>
+  </div>
+</div>
+
+<!-- ===== Tabel Statistik per Negara ===== -->
+<div class="card mb-4">
+  <div class="card-body p-4">
+    <h5 class="card-title mb-3">&#127757; Statistik per Negara (urut curah hujan)</h5>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr>
+            <th>Negara</th>
+            <th class="text-end">Curah Hujan (mm)</th>
+            <th class="text-end">Hasil Rata-rata (hg/ha)</th>
+            <th class="text-end">Hasil Rata-rata (ton/ha)</th>
+            <th class="text-end">Min&ndash;Maks (hg/ha)</th>
+            <th class="text-end">n</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+          <tr>
+            <td>Pakistan</td>
+            <td class="text-end">494</td>
+            <td class="text-end">30.052</td>
+            <td class="text-end">3,01</td>
+            <td class="text-end muted">23.151 &ndash; 37.528</td>
+            <td class="text-end muted">23</td>
+          </tr>
+          
+          <tr>
+            <td>India</td>
+            <td class="text-end">1.083</td>
+            <td class="text-end">30.296</td>
+            <td class="text-end">3,03</td>
+            <td class="text-end muted">26.092 &ndash; 36.909</td>
+            <td class="text-end muted">23</td>
+          </tr>
+          
+          <tr>
+            <td>Nepal</td>
+            <td class="text-end">1.500</td>
+            <td class="text-end">26.239</td>
+            <td class="text-end">2,62</td>
+            <td class="text-end muted">20.481 &ndash; 33.120</td>
+            <td class="text-end muted">23</td>
+          </tr>
+          
+          <tr>
+            <td>Thailand</td>
+            <td class="text-end">1.622</td>
+            <td class="text-end">26.761</td>
+            <td class="text-end">2,68</td>
+            <td class="text-end muted">19.556 &ndash; 31.867</td>
+            <td class="text-end muted">23</td>
+          </tr>
+          
+          <tr>
+            <td>Sri Lanka</td>
+            <td class="text-end">1.712</td>
+            <td class="text-end">34.528</td>
+            <td class="text-end">3,45</td>
+            <td class="text-end muted">29.933 &ndash; 40.558</td>
+            <td class="text-end muted">23</td>
+          </tr>
+          
+          <tr>
+            <td>Bangladesh</td>
+            <td class="text-end">2.666</td>
+            <td class="text-end">34.424</td>
+            <td class="text-end">3,44</td>
+            <td class="text-end muted">25.328 &ndash; 45.317</td>
+            <td class="text-end muted">23</td>
+          </tr>
+          
+          <tr>
+            <td>Indonesia <span class="badge badge-lime ms-1">tertinggi</span></td>
+            <td class="text-end">2.702</td>
+            <td class="text-end">45.752</td>
+            <td class="text-end">4,58</td>
+            <td class="text-end muted">41.974 &ndash; 51.520</td>
+            <td class="text-end muted">23</td>
+          </tr>
+          
+          <tr>
+            <td>Malaysia</td>
+            <td class="text-end">2.875</td>
+            <td class="text-end">32.791</td>
+            <td class="text-end">3,28</td>
+            <td class="text-end muted">27.694 &ndash; 38.763</td>
+            <td class="text-end muted">23</td>
+          </tr>
+          
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="d-flex gap-2 justify-content-center mb-2">
+  <a href="/" class="btn btn-lime">Coba Prediksi &rarr;</a>
+</div>
+
+    </div>
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="py-3 mt-auto">
+    <div class="container d-flex flex-wrap justify-content-between">
+      <span>Proyek Akhir Modul 1 &mdash; Implementasi Regresi Linear Sederhana dengan Flask</span>
+      <span>Studi kasus: Padi Asia Monsun (FAO &amp; World Bank, 1990&ndash;2013)</span>
+    </div>
+  </footer>
+
+  <script src="file:///home/z/my-project/prediksi-panen-flask/static/vendor/bootstrap.bundle.min.js"></script>
+  
+</body>
+</html>

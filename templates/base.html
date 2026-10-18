@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="id" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block judul %}Prediksi Hasil Panen{% endblock %} | Regresi Linear</title>
+  <!-- Bootstrap 5.3.3 (lokal, aplikasi tetap jalan tanpa internet) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <!-- ===== Navigasi ===== -->
+  <nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="{{ url_for('index') }}">&#127807; Prediksi Panen &middot; Regresi Linear</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuUtama">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="menuUtama">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link {{ 'active' if menu_aktif == 'prediksi' }}" href="{{ url_for('index') }}">Prediksi</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {{ 'active' if menu_aktif == 'analitik' }}" href="{{ url_for('analitik') }}">Analitik Model</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== Konten ===== -->
+  <main class="py-4">
+    <div class="container">
+      {% block konten %}{% endblock %}
+    </div>
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="py-3 mt-auto">
+    <div class="container d-flex flex-wrap justify-content-between">
+      <span>Proyek Akhir Modul 1 &mdash; Implementasi Regresi Linear Sederhana dengan Flask</span>
+      <span>Studi kasus: Padi Asia Monsun (FAO &amp; World Bank, 1990&ndash;2013)</span>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='vendor/bootstrap.bundle.min.js') }}"></script>
+  {% block skrip %}{% endblock %}
+</body>
+</html>
